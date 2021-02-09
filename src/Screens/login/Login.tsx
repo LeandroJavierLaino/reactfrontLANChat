@@ -1,4 +1,4 @@
-import { Login as LoginComponent } from '../../Components/login/Login';
+import { LoginComponent } from '../../Components/login';
 
 import React from 'react';
 import { Theme } from '@material-ui/core';
