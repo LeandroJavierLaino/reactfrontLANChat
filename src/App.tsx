@@ -5,25 +5,16 @@ import {
   Switch,
   Route /*, Link*/,
 } from 'react-router-dom';
-import {
-  Box,
-  createMuiTheme,
-  createStyles,
-  CssBaseline,
-  makeStyles,
-  Switch as SwitchSlider,
-  Theme,
-  ThemeProvider,
-  Toolbar,
-  Typography,
-} from '@material-ui/core';
-import BrightnessHighRoundedIcon from '@material-ui/icons/BrightnessHighRounded';
-import Brightness4RoundedIcon from '@material-ui/icons/Brightness4Rounded';
+import { createMuiTheme, CssBaseline, ThemeProvider } from '@material-ui/core';
 import Login from './Screens/login/Login';
+import { SnackbarProvider } from 'notistack';
+
+import Chatroom from './Screens/chatroom/Chatroom';
+
+import CustomAppBar from './Components/CustomAppBar/CustomAppBar';
 
 function App() {
   const [selectedTheme, setSelectedTheme] = useState<'dark' | 'light'>('light');
-  const classes = useStyle();
 
   const toggleTheme = () => {
     setSelectedTheme(selectedTheme === 'dark' ? 'light' : 'dark');
@@ -37,62 +28,39 @@ function App() {
   });
 
   return (
-    <Router>
-      <ThemeProvider theme={themeSelected}>
-        <CssBaseline />
-        <Toolbar>
-          <Box className={classes.switchSlider}>
-            {selectedTheme === 'dark' ? (
-              <BrightnessHighRoundedIcon
-                className={classes.iconTheme}
-                fontSize="large"
-              />
-            ) : (
-              <Brightness4RoundedIcon
-                className={classes.iconTheme}
-                fontSize="large"
-              />
-            )}
+    <SnackbarProvider
+      maxSnack={3}
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'center',
+      }}
+    >
+      <Router>
+        <ThemeProvider theme={themeSelected}>
+          <CssBaseline />
+          <CustomAppBar
+            selectedTheme={selectedTheme}
+            theme={themeSelected}
+            toggleTheme={toggleTheme}
+          />
 
-            <SwitchSlider color="primary" onClick={toggleTheme} />
-          </Box>
-        </Toolbar>
+          <Switch>
+            <Route path="/login">
+              <Login theme={themeSelected} />
+            </Route>
 
-        <Switch>
-          <Route path="/login">
-            <Login theme={themeSelected} />
-          </Route>
-          {/**This should render a messages screen component. */}
-          <Route path="/messages">
-            <Typography>{'UNDER CONSTRUCTION'}</Typography>
-            <Login theme={themeSelected} />
-          </Route>
+            <Route path="/messages">
+              <Chatroom theme={themeSelected} />
+            </Route>
 
-          <Route path="/">
-            <Login theme={themeSelected} />
-          </Route>
-        </Switch>
-      </ThemeProvider>
-    </Router>
+            <Route path="/">
+              <Login theme={themeSelected} />
+            </Route>
+          </Switch>
+        </ThemeProvider>
+      </Router>
+    </SnackbarProvider>
   );
 }
-
-const useStyle = makeStyles((theme: Theme) =>
-  createStyles({
-    switchSlider: {
-      flex: 1,
-      textAlign: 'end',
-      margin: theme.spacing(2),
-      marginInline: theme.spacing(4),
-    },
-    iconTheme: {
-      right: 0,
-      marginInline: theme.spacing(2),
-      alignContent: 'flex-end',
-      display: 'flex',
-      position: 'absolute',
-    },
-  })
-);
 
 export default App;
