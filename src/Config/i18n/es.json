@@ -1,5 +1,7 @@
 {
   "writeYourName": "Escribe tu nombre ...",
   "LANChat": "LAN Chat",
-  "pleaseWriteYourName": "Por favor escribe tu nombre"
+  "pleaseWriteYourName": "Por favor escribe tu nombre",
+  "writeAMessage": "Escribe un mensaje . . .",
+  "pleaseUseLettersInYourName": "Por favor utiliza solo letras en tu nombre"
 }

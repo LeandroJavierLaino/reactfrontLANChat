@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
+  AppBar,
   Box,
   Container,
+  // Container,
   createStyles,
   IconButton,
   List,
@@ -13,51 +15,85 @@ import {
 } from '@material-ui/core';
 import SendRoundedIcon from '@material-ui/icons/SendRounded';
 import { useTranslation } from 'react-i18next';
+import { getMessages, saveMessage } from '../../Config/api/messages';
+import { Message } from '../../Config/types/message';
+import { Redirect } from 'react-router-dom';
 
 type ChatroomComponentProps = {
   theme: Theme;
+  username: string;
 };
 
-const tileData = [
-  { message: 'Mensaje A', username: 'user A' },
-  { message: 'Mensaje B', username: 'user B' },
-  { message: 'Mensaje C', username: 'user C' },
-  { message: 'Mensaje D', username: 'user D' },
-  { message: 'Mensaje E', username: 'user E' },
-];
-
-function Chatroom({ theme }: ChatroomComponentProps) {
+function Chatroom({ theme, username }: ChatroomComponentProps) {
   const classes = useStyle(theme);
   const { t } = useTranslation();
+  const [message, setMessage] = useState<string>('');
 
-  const sendMessage = () => {};
+  const [messages, setMessages] = useState<Message[]>([]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const gettingMessages = async () => {
+        const apiMessages = await getMessages();
+
+        if (messages.length !== apiMessages.data.length) {
+          setMessages(apiMessages.data as Message[]);
+
+          window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: 'smooth',
+          });
+
+          clearInterval(interval);
+        }
+      };
+      gettingMessages();
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [messages]);
+
+  const sendMessage = async () => {
+    await saveMessage(username, message);
+    setMessage('');
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  };
 
   const updateMessage = (
     event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
   ) => {
-    console.log('message : ', event.target.value);
+    setMessage(event.target.value);
   };
 
-  return (
-    <Box className={classes.chatContainer}>
-      <List>
-        {tileData.map((tile) => (
-          <ListItem>
-            <ListItemText primary={tile.message} secondary={tile.username} />
+  return !username ? (
+    <Redirect to="/login" />
+  ) : (
+    <Box>
+      <List className={classes.chatContainer}>
+        {messages.map((message, index) => (
+          <ListItem key={`tile-index-${index}`}>
+            <ListItemText
+              primary={message.message}
+              secondary={`${message.username} - ${message.date}`}
+            />
           </ListItem>
         ))}
       </List>
-      <Container className={classes.messageWriterContainer}>
-        <TextField
-          variant="outlined"
-          placeholder={t('writeAMessage')}
-          onChange={updateMessage}
-          className={classes.inputMessage}
-        />
-        <IconButton onClick={sendMessage} color="default">
-          <SendRoundedIcon fontSize="large" />
-        </IconButton>
-      </Container>
+
+      <AppBar position="fixed" color="primary" className={classes.appBar}>
+        <Container className={classes.messageWriterContainer}>
+          <TextField
+            variant="outlined"
+            placeholder={t('writeAMessage')}
+            onChange={updateMessage}
+            className={classes.inputMessage}
+            value={message}
+          />
+          <IconButton onClick={sendMessage} color="default">
+            <SendRoundedIcon fontSize="large" />
+          </IconButton>
+        </Container>
+      </AppBar>
     </Box>
   );
 }
@@ -69,22 +105,27 @@ const useStyle = makeStyles((theme: Theme) =>
       minHeight: 500,
       marginTop: theme.spacing(15),
       margin: theme.spacing(2),
+      marginBottom: theme.spacing(15),
     },
     messageWriterContainer: {
       flex: 1,
-      position: 'absolute',
-      alignContent: 'space-between',
-      bottom: theme.spacing(2),
+      margin: theme.spacing(2),
     },
     inputMessage: {
+      backgroundColor: '#fff',
+      borderRadius: theme.spacing(2),
       width:
         window.screen.height >= 1000
-          ? '95%'
+          ? '90%'
           : window.screen.height < 500
           ? '85%'
           : '80%',
     },
+    appBar: {
+      top: 'auto',
+      bottom: 0,
+    },
   })
 );
 
-export { Chatroom };
+export default Chatroom;

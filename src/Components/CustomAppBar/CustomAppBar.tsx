@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import {
   AppBar,
@@ -12,37 +12,29 @@ import {
 import BrightnessHighRoundedIcon from '@material-ui/icons/BrightnessHighRounded';
 import Brightness4RoundedIcon from '@material-ui/icons/Brightness4Rounded';
 
-import { getSession } from '../../Redux/selectors/session';
-import { connect, ConnectedProps } from 'react-redux';
 import LogoutButton from '../LogoutButton/LogoutButton';
-
-const connector = connect(getSession);
-
-type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type CustomAppBarProps = {
   selectedTheme: string;
   theme: Theme;
   toggleTheme(): void;
-} & PropsFromRedux;
+  username: string;
+  changeName(newName: string): void;
+};
 
 const CustomAppBar = ({
   selectedTheme,
   theme,
   toggleTheme,
-  logged,
   username,
+  changeName,
 }: CustomAppBarProps) => {
   const classes = useStyle(theme);
-
-  useEffect(() => {
-    console.log('logged ', !!logged);
-  }, [logged]);
 
   return (
     <AppBar>
       <Toolbar>
-        {!!logged && <LogoutButton />}
+        {username && <LogoutButton changeName={changeName} />}
         <Box className={classes.switchSlider}>
           {selectedTheme === 'dark' ? (
             <BrightnessHighRoundedIcon
@@ -81,8 +73,4 @@ const useStyle = makeStyles((theme: Theme) =>
   })
 );
 
-const mapStateToProps = (state: any) => {
-  return getSession(state);
-};
-
-export default connect(mapStateToProps)(CustomAppBar);
+export default CustomAppBar;

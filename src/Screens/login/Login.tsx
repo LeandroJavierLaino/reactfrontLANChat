@@ -5,10 +5,11 @@ import { Theme } from '@material-ui/core';
 
 type LoginScreenProps = {
   theme: Theme;
+  changeName(newName: string): void;
 };
 
-function Login({ theme }: LoginScreenProps) {
-  return <LoginComponent theme={theme} />;
+function Login({ theme, changeName }: LoginScreenProps) {
+  return <LoginComponent theme={theme} changeName={changeName} />;
 }
 
 export default Login;

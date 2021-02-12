@@ -4,10 +4,11 @@ import ChatroomComponent from '../../Components/chatroom';
 
 type ChatroomScreenProps = {
   theme: Theme;
+  username: string;
 };
 
-function Chatroom({ theme }: ChatroomScreenProps) {
-  return <ChatroomComponent theme={theme} />;
+function Chatroom({ theme, username }: ChatroomScreenProps) {
+  return <ChatroomComponent theme={theme} username={username} />;
 }
 
 export default Chatroom;
