@@ -1,3 +1,5 @@
-import { Chatroom as ChatroomComponent } from './Chatroom';
+import Chatroom from './Chatroom';
+
+const ChatroomComponent = Chatroom;
 
 export default ChatroomComponent;

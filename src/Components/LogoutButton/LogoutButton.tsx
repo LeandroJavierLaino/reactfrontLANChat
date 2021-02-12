@@ -2,18 +2,14 @@ import React from 'react';
 
 import PowerSettingsNewRoundedIcon from '@material-ui/icons/PowerSettingsNewRounded';
 import { IconButton } from '@material-ui/core';
-import { connect, ConnectedProps } from 'react-redux';
-import { logout } from '../../Redux/actions/actions';
 
-const connector = connect(logout);
+type LogoutButtonProps = {
+  changeName(username: string): void;
+};
 
-type PropsFromRedux = ConnectedProps<typeof connector>;
-
-type LogoutButtonProps = PropsFromRedux;
-
-function LogoutButton({ dispatch }: LogoutButtonProps) {
+function LogoutButton({ changeName }: LogoutButtonProps) {
   const logoutAction = () => {
-    dispatch(logout());
+    changeName('');
   };
 
   return (
@@ -23,4 +19,4 @@ function LogoutButton({ dispatch }: LogoutButtonProps) {
   );
 }
 
-export default connector(LogoutButton);
+export default LogoutButton;

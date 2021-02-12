@@ -14,18 +14,14 @@ import { createStyles, makeStyles } from '@material-ui/styles';
 import { Redirect } from 'react-router';
 import { useSnackbar } from 'notistack';
 import PowerSettingsNewRoundedIcon from '@material-ui/icons/PowerSettingsNewRounded';
-import { login } from '../../Redux/actions/actions';
-import { connect, ConnectedProps } from 'react-redux';
-
-const connector = connect(login);
-
-type PropsFromRedux = ConnectedProps<typeof connector>;
+import { saveUser } from '../../Config/api/users';
 
 type LoginComponentProps = {
   theme: Theme;
-} & PropsFromRedux;
+  changeName(newName: string): void;
+};
 
-function Login({ theme, dispatch }: LoginComponentProps) {
+function Login({ theme, changeName }: LoginComponentProps) {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -33,10 +29,18 @@ function Login({ theme, dispatch }: LoginComponentProps) {
   const [userName, setUserName] = useState<string>('');
   const [submiting, setSubmiting] = useState<boolean>(false);
 
-  const submitLogin = () => {
+  const submitLogin = async () => {
     if (userName) {
-      dispatch(login(userName));
-      setSubmiting(true);
+      if (!/[^a-zA-Z]/.test(userName)) {
+        await saveUser(userName);
+        changeName(userName);
+        setSubmiting(true);
+      } else {
+        enqueueSnackbar(t('pleaseUseLettersInYourName'), {
+          variant: 'error',
+          autoHideDuration: 3000,
+        });
+      }
     } else
       enqueueSnackbar(t('pleaseWriteYourName'), {
         variant: 'error',
@@ -105,4 +109,4 @@ const useStyle = makeStyles((theme: Theme) =>
   })
 );
 
-export default connector(Login);
+export default Login;
